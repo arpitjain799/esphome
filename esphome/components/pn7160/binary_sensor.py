@@ -8,7 +8,7 @@ from . import pn7160_ns, PN7160, CONF_PN7160_ID
 DEPENDENCIES = ["pn7160"]
 
 CONF_NDEF_CONTAINS = "ndef_contains"
-CONF_TAG_NAME = "tag_name"
+CONF_TAG_ID = "tag_id"
 
 
 def validate_uid(value):
@@ -39,11 +39,11 @@ CONFIG_SCHEMA = cv.All(
         {
             cv.GenerateID(CONF_PN7160_ID): cv.use_id(PN7160),
             cv.Optional(CONF_NDEF_CONTAINS): cv.string,
-            cv.Optional(CONF_TAG_NAME): cv.string,
+            cv.Optional(CONF_TAG_ID): cv.string,
             cv.Optional(CONF_UID): validate_uid,
         }
     ),
-    cv.has_exactly_one_key(CONF_NDEF_CONTAINS, CONF_TAG_NAME, CONF_UID),
+    cv.has_exactly_one_key(CONF_NDEF_CONTAINS, CONF_TAG_ID, CONF_UID),
 )
 
 
@@ -54,8 +54,8 @@ async def to_code(config):
     cg.add(hub.register_tag(var))
     if CONF_NDEF_CONTAINS in config:
         cg.add(var.set_ndef_match_string(config[CONF_NDEF_CONTAINS]))
-    if CONF_TAG_NAME in config:
-        cg.add(var.set_tag_name(config[CONF_TAG_NAME]))
+    if CONF_TAG_ID in config:
+        cg.add(var.set_tag_name(config[CONF_TAG_ID]))
     elif CONF_UID in config:
         addr = [HexInt(int(x, 16)) for x in config[CONF_UID].split("-")]
         cg.add(var.set_uid(addr))
