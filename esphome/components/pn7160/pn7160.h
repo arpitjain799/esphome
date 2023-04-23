@@ -15,8 +15,9 @@
 namespace esphome {
 namespace pn7160 {
 
-static const std::string EXT_RECORD_TYPE = "android.com:pkg";
-static const std::string EXT_RECORD_PAYLOAD = "io.homeassistant.companion.android";
+static const char EXT_RECORD_TYPE[] = "android.com:pkg";
+static const char EXT_RECORD_PAYLOAD[] = "io.homeassistant.companion.android";
+static const char HA_TAG_PREFIX[] = "https://www.home-assistant.io/tag/";
 
 static const uint16_t NFCC_DEFAULT_TIMEOUT = 5;
 static const uint16_t NFCC_FULL_TIMEOUT = 1000;
@@ -149,18 +150,21 @@ struct DiscoveredEndpoint {
 
 class PN7160BinarySensor : public binary_sensor::BinarySensor {
  public:
-  void set_match_string(const std::string &str) { match_string_ = str; }
-  void set_uid(const std::vector<uint8_t> &uid) { uid_ = uid; }
+  void set_ndef_match_string(const std::string &str);
+  void set_tag_name(const std::string &str);
+  void set_uid(const std::vector<uint8_t> &uid);
 
   bool tag_match_ndef_string(const std::shared_ptr<esphome::nfc::NdefMessage> &msg);
+  bool tag_match_tag_name(const std::shared_ptr<esphome::nfc::NdefMessage> &msg);
   bool tag_match_uid(const std::vector<uint8_t> &data);
 
   void tag_off(nfc::NfcTag &tag);
   void tag_on(nfc::NfcTag &tag);
 
  protected:
-  std::vector<uint8_t> uid_;
+  bool match_tag_name_{false};
   std::string match_string_;
+  std::vector<uint8_t> uid_;
 };
 
 class PN7160 : public Component {

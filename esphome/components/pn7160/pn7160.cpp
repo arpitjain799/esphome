@@ -1105,10 +1105,34 @@ uint8_t PN7160::wait_for_irq_(uint16_t timeout, bool pin_state) {
   return nfc::STATUS_FAILED;
 }
 
+void PN7160BinarySensor::set_ndef_match_string(const std::string &str) {
+  this->match_string_ = str;
+  this->match_tag_name_ = false;
+}
+
+void PN7160BinarySensor::set_tag_name(const std::string &str) {
+  this->match_string_ = str;
+  this->match_tag_name_ = true;
+}
+
+void PN7160BinarySensor::set_uid(const std::vector<uint8_t> &uid) { this->uid_ = uid; }
+
 bool PN7160BinarySensor::tag_match_ndef_string(const std::shared_ptr<esphome::nfc::NdefMessage> &msg) {
   for (auto record : msg->get_records()) {
     if (record->get_payload().find(this->match_string_) != std::string::npos) {
       return true;
+    }
+  }
+  return false;
+}
+
+bool PN7160BinarySensor::tag_match_tag_name(const std::shared_ptr<esphome::nfc::NdefMessage> &msg) {
+  for (auto record : msg->get_records()) {
+    if (record->get_payload().find(HA_TAG_PREFIX) != std::string::npos) {
+      auto rec_substr = record->get_payload().substr(sizeof(HA_TAG_PREFIX) - 1);
+      if (rec_substr.find(this->match_string_) != std::string::npos) {
+        return true;
+      }
     }
   }
   return false;
@@ -1128,8 +1152,17 @@ bool PN7160BinarySensor::tag_match_uid(const std::vector<uint8_t> &data) {
 }
 
 void PN7160BinarySensor::tag_off(nfc::NfcTag &tag) {
-  if (!this->match_string_.empty() && tag.has_ndef_message() && this->tag_match_ndef_string(tag.get_ndef_message())) {
-    this->publish_state(false);
+  if (!this->match_string_.empty() && tag.has_ndef_message()) {
+    if (this->match_tag_name_) {
+      if (this->tag_match_tag_name(tag.get_ndef_message())) {
+        this->publish_state(false);
+      }
+    } else {
+      if (this->tag_match_ndef_string(tag.get_ndef_message())) {
+        this->publish_state(false);
+      }
+    }
+    return;
   }
   if (!this->uid_.empty() && this->tag_match_uid(tag.get_uid())) {
     this->publish_state(false);
@@ -1137,8 +1170,17 @@ void PN7160BinarySensor::tag_off(nfc::NfcTag &tag) {
 }
 
 void PN7160BinarySensor::tag_on(nfc::NfcTag &tag) {
-  if (!this->match_string_.empty() && tag.has_ndef_message() && this->tag_match_ndef_string(tag.get_ndef_message())) {
-    this->publish_state(true);
+  if (!this->match_string_.empty() && tag.has_ndef_message()) {
+    if (this->match_tag_name_) {
+      if (this->tag_match_tag_name(tag.get_ndef_message())) {
+        this->publish_state(true);
+      }
+    } else {
+      if (this->tag_match_ndef_string(tag.get_ndef_message())) {
+        this->publish_state(true);
+      }
+    }
+    return;
   }
   if (!this->uid_.empty() && this->tag_match_uid(tag.get_uid())) {
     this->publish_state(true);
