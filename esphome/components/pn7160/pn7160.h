@@ -5,7 +5,6 @@
 #include "esphome/components/nfc/nci_core.h"
 #include "esphome/components/nfc/nci_message.h"
 #include "esphome/components/nfc/nfc.h"
-#include "esphome/components/spi/spi.h"
 #include "esphome/core/component.h"
 #include "esphome/core/gpio.h"
 #include "esphome/core/helpers.h"

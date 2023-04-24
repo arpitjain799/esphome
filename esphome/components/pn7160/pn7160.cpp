@@ -1078,10 +1078,6 @@ uint8_t PN7160::transceive_(nfc::NciMessage &tx, nfc::NciMessage &rx, const uint
 
     if (expect_notification) {
       // if the NFCC said "OK", there will be additional data to read; this comes back in a notification message
-      if (this->wait_for_irq_(timeout) != nfc::STATUS_OK) {
-        return nfc::STATUS_FAILED;
-      }
-
       if (this->read_nfcc_(rx, timeout) != nfc::STATUS_OK) {
         ESP_LOGE(TAG, "Error receiving data from endpoint");
         return nfc::STATUS_FAILED;

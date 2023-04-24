@@ -14,6 +14,7 @@ void PN7160Spi::setup() {
 
 uint8_t PN7160Spi::read_nfcc_(nfc::NciMessage &rx, const uint16_t timeout) {
   if (this->wait_for_irq_(timeout) != nfc::STATUS_OK) {
+    ESP_LOGW(TAG, "read_nfcc_() timeout waiting for IRQ");
     return nfc::STATUS_FAILED;
   }
 
@@ -30,7 +31,7 @@ uint8_t PN7160Spi::read_nfcc_(nfc::NciMessage &rx, const uint16_t timeout) {
   this->disable();
   // semaphore to ensure transaction is complete before returning
   if (this->wait_for_irq_(pn7160::NFCC_DEFAULT_TIMEOUT, false) != nfc::STATUS_OK) {
-    ESP_LOGW(TAG, "  post-read");
+    ESP_LOGW(TAG, "read_nfcc_() post-read timeout waiting for IRQ line to clear");
     return nfc::STATUS_FAILED;
   }
   return nfc::STATUS_OK;
