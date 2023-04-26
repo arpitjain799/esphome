@@ -66,8 +66,8 @@ void PN7160::set_tag_emulation_message(const optional<std::string> message,
   if (!include_android_app_record.has_value() || include_android_app_record.value()) {
     auto ext_record = make_unique<nfc::NdefRecord>();
     ext_record->set_tnf(nfc::TNF_EXTERNAL_TYPE);
-    ext_record->set_type(EXT_RECORD_TYPE);
-    ext_record->set_payload(EXT_RECORD_PAYLOAD);
+    ext_record->set_type(nfc::HA_TAG_ID_EXT_RECORD_TYPE);
+    ext_record->set_payload(nfc::HA_TAG_ID_EXT_RECORD_PAYLOAD);
     ndef_message->add_record(std::move(ext_record));
   }
 
@@ -157,8 +157,8 @@ void PN7160::set_tag_write_message(optional<std::string> message, optional<bool>
   if (!include_android_app_record.has_value() || include_android_app_record.value()) {
     auto ext_record = make_unique<nfc::NdefRecord>();
     ext_record->set_tnf(nfc::TNF_EXTERNAL_TYPE);
-    ext_record->set_type(EXT_RECORD_TYPE);
-    ext_record->set_payload(EXT_RECORD_PAYLOAD);
+    ext_record->set_type(nfc::HA_TAG_ID_EXT_RECORD_TYPE);
+    ext_record->set_payload(nfc::HA_TAG_ID_EXT_RECORD_PAYLOAD);
     ndef_message->add_record(std::move(ext_record));
   }
 
@@ -1124,8 +1124,8 @@ bool PN7160BinarySensor::tag_match_ndef_string(const std::shared_ptr<esphome::nf
 
 bool PN7160BinarySensor::tag_match_tag_name(const std::shared_ptr<esphome::nfc::NdefMessage> &msg) {
   for (auto record : msg->get_records()) {
-    if (record->get_payload().find(HA_TAG_PREFIX) != std::string::npos) {
-      auto rec_substr = record->get_payload().substr(sizeof(HA_TAG_PREFIX) - 1);
+    if (record->get_payload().find(nfc::HA_TAG_ID_PREFIX) != std::string::npos) {
+      auto rec_substr = record->get_payload().substr(sizeof(nfc::HA_TAG_ID_PREFIX) - 1);
       if (rec_substr.find(this->match_string_) != std::string::npos) {
         return true;
       }

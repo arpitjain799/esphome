@@ -14,10 +14,6 @@
 namespace esphome {
 namespace pn7160 {
 
-static const char EXT_RECORD_TYPE[] = "android.com:pkg";
-static const char EXT_RECORD_PAYLOAD[] = "io.homeassistant.companion.android";
-static const char HA_TAG_PREFIX[] = "https://www.home-assistant.io/tag/";
-
 static const uint16_t NFCC_DEFAULT_TIMEOUT = 5;
 static const uint16_t NFCC_FULL_TIMEOUT = 1000;
 static const uint16_t NFCC_INIT_TIMEOUT = 50;
