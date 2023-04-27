@@ -10,10 +10,6 @@
 namespace esphome {
 namespace nfc {
 
-static const char HA_TAG_ID_EXT_RECORD_TYPE[] = "android.com:pkg";
-static const char HA_TAG_ID_EXT_RECORD_PAYLOAD[] = "io.homeassistant.companion.android";
-static const char HA_TAG_ID_PREFIX[] = "https://www.home-assistant.io/tag/";
-
 class NfcTag {
  public:
   NfcTag() {
@@ -50,9 +46,6 @@ class NfcTag {
   bool has_ndef_message() { return this->ndef_message_ != nullptr; };
   const std::shared_ptr<NdefMessage> &get_ndef_message() { return this->ndef_message_; };
   void set_ndef_message(std::unique_ptr<NdefMessage> ndef_message) { this->ndef_message_ = std::move(ndef_message); };
-  // Home Assistant-specific tag methods
-  bool has_ha_tag_id() { return !this->get_ha_tag_id().empty(); };
-  std::string get_ha_tag_id();
 
  protected:
   std::vector<uint8_t> uid_;
